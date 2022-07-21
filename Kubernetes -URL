@@ -1,2 +1,12 @@
 https://m.do.co/c/74dcb0137794 - Referal link
 https://kubernetes.io/docs/tasks/tools/ - kubectl
+
+pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginxwebserver
+spec:
+  containers:
+  -  image: nginx
+     name: democontainer
