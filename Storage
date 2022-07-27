@@ -1,0 +1,82 @@
+Kubernetes Volumes
+
+On-disk files in a Container are ephemeral. 
+
+When there are multiple containers who wants to share same data, it becomes a challenge.
+
+One of the benefits of Kubernetes is that it supports multiple types of volumes.
+
+PersistentVolume and PersistentVolumeClaim
+
+9.1 PersistentVolume (PV)
+
+
+A PersistentVolume (PV) is a piece of storage in the cluster that has been provisioned by an administrator or dynamically provisioned using Storage Classes
+
+Every Volume which is created can be of different type.
+
+This can be taken care by the Storage Administrator / Ops Team
+PersistentVolumeClaim (PVC)
+
+A PersistentVolumeClaim is a request for the storage by a user.
+
+Within the claim, user need to specify the size of the volume along with access mode.
+
+Developer:
+
+I want a volume of size 10 GB which is has speed of Fast for my pod.
+
+High-Level Working Steps:
+
+Storage Administrator takes care of creating PV.
+Developer can raise a “Claim” (I want a specific type of PV).
+Reference that claim within the PodSpec file. 
+ Volume Expansion in K8s
+
+It can happen that your persistent volume has become full and you need to expand the storage for additional capacity.
+Here are the high-level steps needed for volume expansion in Kubernetes.
+Enable Volume Expansion
+
+Volume Expansion must be enabled in the storage class.
+
+Ensure that allowVolumeExpansion is set to true.
+Resize the PVC
+
+Next step is to resize the PVC with the storage capacity that is needed.
+Restart the POD
+
+Once PVC object is modified, you will have to restart the POD.
+
+
+kubectl delete pod [POD-NAME]
+
+
+kubectl apply -f pod-manifest.yaml
+ Reclaim Policy
+
+The reclaim policy is responsible for what happens to the data in persistent volume when the kubernetes persistent volume claim has been deleted.
+Retain Reclaim Policy
+
+When PVC is deleted, the  PersistentVolume still exists and the volume is considered "released".
+
+It is not yet available for another claim because the previous claimant's data remains on the volume.
+Steps for Reclaimation:
+
+An administrator can manually reclaim the volume with the following steps.
+
+Delete the PersistentVolume. The associated storage asset in external infrastructure (such as an AWS EBS, GCE PD, Azure Disk, or Cinder volume) still exists after the PV is deleted.
+
+Manually clean up the data on the associated storage asset accordingly.
+
+Manually delete the associated storage asset, or if you want to reuse the same storage asset, create a new PersistentVolume with the storage asset definition. 
+Storage Classes
+
+A StorageClass provides a way for administrators to describe the "classes" of storage they offer.
+
+Different classes might map to quality-of-service levels, or to backup policies, or to arbitrary policies determined by the cluster administrators.      
+ Storage Class Resource 
+
+Each StorageClass contains the fields provisioner, parameters, and reclaimPolicy, which are used when a PersistentVolume belonging to the class needs to be dynamically provisioned.
+Understanding Provisioner:
+
+Each StorageClass also has a provisioner that determines what volume plugin is used for provisioning PVs. This field must be specified.
